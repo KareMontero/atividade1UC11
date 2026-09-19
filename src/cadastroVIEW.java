@@ -1,17 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 
-/**
- *
- * @author Adm
- */
 public class cadastroVIEW extends javax.swing.JFrame {
 
-    /**
-     * Creates new form cadastroVIEW
-     */
     public cadastroVIEW() {
         initComponents();
     }
@@ -140,16 +129,33 @@ public class cadastroVIEW extends javax.swing.JFrame {
     }//GEN-LAST:event_cadastroNomeActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-        ProdutosDTO produto = new ProdutosDTO();
-        String nome = cadastroNome.getText();
-        String valor = cadastroValor.getText();
-        String status = "A Venda";
-        produto.setNome(nome);
-        produto.setValor(Integer.parseInt(valor));
-        produto.setStatus(status);
-        
-        ProdutosDAO produtodao = new ProdutosDAO();
-        produtodao.cadastrarProduto(produto);
+       try {
+            ProdutosDTO produto = new ProdutosDTO();
+            String nome = cadastroNome.getText();
+            String valor = cadastroValor.getText();
+            String status = "A Venda";
+            
+            produto.setNome(nome);
+            produto.setValor(Integer.parseInt(valor));
+            produto.setStatus(status);
+            
+            ProdutosDAO produtodao = new ProdutosDAO();
+            produtodao.cadastrarProduto(produto);
+            
+            // ALTERAÇÃO EXIGIDA: Mensagem de Sucesso
+            javax.swing.JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
+            
+            // Opcional: Limpa os campos após cadastrar para facilitar o uso
+            cadastroNome.setText("");
+            cadastroValor.setText("");
+            cadastroNome.requestFocus();
+            
+        } catch (Exception erro) {
+            // ALTERAÇÃO EXIGIDA: Mensagem de Erro (se o valor for inválido ou o banco falhar)
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao realizar o cadastro: " + erro.getMessage());
+        }
+                                             
+
         
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
