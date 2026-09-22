@@ -74,7 +74,9 @@ public class ProdutosDAO {
         return listagem;
     }
 
-       public void venderProduto(int id) {
+       // essa venderProduto está vendendo produto já vendido, por isso coloquei o novo código.
+       
+  /*     public void venderProduto(int id) {
     Connection conn = null;
     PreparedStatement prep = null;
     
@@ -101,7 +103,57 @@ public class ProdutosDAO {
         try { if (prep != null) prep.close(); } catch (java.sql.SQLException e) { }
         try { if (conn != null) conn.close(); } catch (java.sql.SQLException e) { }
     }
+} */
+       public void venderProduto(int id) {
+    Connection conn = null;
+    PreparedStatement prep = null;
+    java.sql.ResultSet rs = null; // Linha nova para ler o status do banco
+    
+    try {
+        conn = new conectaDAO().connectDB();
+        
+        // 1. PASSO NOVO: Busca o status atual do produto no banco de dados
+        String sqlCheck = "SELECT status FROM produtos WHERE id = ?";
+        prep = conn.prepareStatement(sqlCheck);
+        prep.setInt(1, id);
+        rs = prep.executeQuery();
+        
+        if (rs.next()) {
+            String statusAtual = rs.getString("status");
+            
+            // 2. PASSO NOVO: Se o status já for "Vendido", mostra o aviso e para tudo
+            if (statusAtual != null && statusAtual.equalsIgnoreCase("Vendido")) {
+                JOptionPane.showMessageDialog(null, "Este produto já foi vendido!");
+                return; // O 'return' faz o código parar aqui e não deixa executar o UPDATE abaixo
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Produto não encontrado!");
+            return;
+        }
+        
+        // Fecha o comando de checagem para poder abrir o comando de atualização
+        prep.close();
+        
+        // 3. SEU CÓDIGO ORIGINAL: Atualiza para "Vendido" se o produto estava liberado
+        String sql = "UPDATE produtos SET status = ? WHERE id = ?";
+        prep = conn.prepareStatement(sql);
+        
+        prep.setString(1, "Vendido");
+        prep.setInt(2, id);
+        
+        prep.executeUpdate(); 
+        JOptionPane.showMessageDialog(null, "Produto vendido com sucesso!");
+        
+    } catch (java.sql.SQLException erro) {
+        JOptionPane.showMessageDialog(null, "Erro ao vender produto no DAO: " + erro.getMessage());
+    } finally {
+        // Garante o fechamento de tudo o que foi aberto
+        try { if (rs != null) rs.close(); } catch (java.sql.SQLException e) { }
+        try { if (prep != null) prep.close(); } catch (java.sql.SQLException e) { }
+        try { if (conn != null) conn.close(); } catch (java.sql.SQLException e) { }
+    }
 }
+
 
        public ArrayList<ProdutosDTO> listarProdutosVendidos() {
     ArrayList<ProdutosDTO> listagemVendidos = new ArrayList<>();
