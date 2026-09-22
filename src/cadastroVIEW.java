@@ -124,12 +124,13 @@ public class cadastroVIEW extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cadastroNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadastroNomeActionPerformed
-        
-        
+
+
     }//GEN-LAST:event_cadastroNomeActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-       try {
+        //como não há filtros no cadastro errado de itens troquei o código para evitar erros e as respostas de erros serem coerentes
+        /*  try {
             ProdutosDTO produto = new ProdutosDTO();
             String nome = cadastroNome.getText();
             String valor = cadastroValor.getText();
@@ -153,14 +154,74 @@ public class cadastroVIEW extends javax.swing.JFrame {
         } catch (Exception erro) {
             // ALTERAÇÃO EXIGIDA: Mensagem de Erro (se o valor for inválido ou o banco falhar)
             javax.swing.JOptionPane.showMessageDialog(this, "Erro ao realizar o cadastro: " + erro.getMessage());
-        }
-                                             
+        } */
 
-        
+        // 1. Pega os textos digitados e remove espaços em branco das pontas (.trim())
+        String nome = cadastroNome.getText().trim();
+        String valorStr = cadastroValor.getText().trim();
+
+        // REGRA 1: Erro se nada (nenhum dos dois) for digitado
+        if (nome.isEmpty() && valorStr.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro: Nenhum dado foi preenchido. Digite o nome e o valor!");
+            return; // Para o código aqui e não deixa cadastrar
+        }
+
+        // REGRA 2: Erro se o nome do produto NÃO for digitado
+        if (nome.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro: O nome do produto precisa ser digitado!");
+            return;
+        }
+
+        // REGRA 3: Erro se o preço NÃO for digitado
+        if (valorStr.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro: O preço do produto precisa ser digitado!");
+            return;
+        }
+
+        // 2. Se passou pelas validações de campos vazios, tenta processar o cadastro
+        try {
+            ProdutosDTO produto = new ProdutosDTO();
+            String status = "A Venda";
+
+            produto.setNome(nome);
+            // Converte o texto do valor para número inteiro
+            produto.setValor(Integer.parseInt(valorStr));
+            produto.setStatus(status);
+
+            ProdutosDAO produtodao = new ProdutosDAO();
+            produtodao.cadastrarProduto(produto);
+
+            // Mensagem de Sucesso
+            javax.swing.JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
+
+            // Limpa os campos após cadastrar para facilitar o uso
+            cadastroNome.setText("");
+            cadastroValor.setText("");
+            cadastroNome.requestFocus();
+
+        } catch (NumberFormatException e) {
+            // Erro caso o usuário digite letras ou símbolos (ex: "abc" ou "10,50") no preço
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro: O preço deve conter apenas números inteiros!");
+
+            cadastroNome.setText("");
+            cadastroValor.setText("");
+            cadastroNome.requestFocus();
+
+        } catch (Exception erro) {
+            // Qualquer outro erro geral ou de banco de dados
+            javax.swing.JOptionPane.showMessageDialog(this, "Erro ao realizar o cadastro: " + erro.getMessage());
+
+            cadastroNome.setText("");
+            cadastroValor.setText("");
+            cadastroNome.requestFocus();
+
+        }
+
+
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void btnProdutosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdutosActionPerformed
-        listagemVIEW listagem = new listagemVIEW(); 
+        listagemVIEW listagem = new listagemVIEW();
         listagem.setVisible(true);
     }//GEN-LAST:event_btnProdutosActionPerformed
 
